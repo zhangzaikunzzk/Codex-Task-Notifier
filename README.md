@@ -1,5 +1,7 @@
 # Task Complete Notifier
 
+[中文说明](README.zh-CN.md)
+
 A tiny Windows PowerShell utility for sending "task completed" notifications to your phone or Apple Watch through Pushover or Pushcut.
 
 ## Easiest Setup: Install as a Codex Skill
