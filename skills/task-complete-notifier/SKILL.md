@@ -1,6 +1,6 @@
 ---
 name: task-complete-notifier
-description: Send task-complete notifications to a user's phone or Apple Watch through local PowerShell scripts using Pushover or Pushcut. Use when the user asks Codex to install, configure, test, or run project-completion notifications, Apple Watch alerts, Pushover task alerts, Pushcut webhooks, or end-of-task reminders.
+description: Send task-complete notifications to a user's phone or Apple Watch through local PowerShell scripts using Pushover or Pushcut. Use when the user asks Codex to install, configure, test, or run project-completion notifications, Apple Watch alerts, Pushover task alerts, Pushcut webhooks, AGENTS.md notification rules, or end-of-task reminders.
 ---
 
 # Task Complete Notifier
@@ -60,6 +60,21 @@ Then, after the user confirms `.env` is configured, send a real test:
 ```
 
 If the user uses Apple Watch, tell them to verify that the iPhone receives the Pushover notification and that Apple Watch notification mirroring is enabled for Pushover.
+
+## AGENTS.md Persistence
+
+Installing the skill does not automatically edit `AGENTS.md`. When the user asks to make notifications persistent:
+
+1. Ask whether they want the rule in the current project's `AGENTS.md` or their global Codex instructions.
+2. Before editing, state the target file and the exact rule being added.
+3. Add this rule, adapted only for the chosen script path:
+
+```markdown
+- When a project task is genuinely complete and before the final response, run the local task-complete notifier script to send a Pushover or Pushcut completion notification. Do not send notifications for ordinary chat, intermediate progress, or blocked work. Never print, summarize, upload, or commit notifier `.env` secrets.
+```
+
+4. If no AGENTS file exists at the chosen project target, create it only after the user confirms.
+5. Do not overwrite unrelated AGENTS content.
 
 ## Task Completion Workflow
 
