@@ -7,6 +7,24 @@ It works with:
 - Pushover, recommended
 - Pushcut, optional
 
+## Install as a Codex skill
+
+If you use Codex, the easiest path is to install this repository as a skill.
+
+Copy this message into Codex:
+
+```text
+Install the Codex skill from https://github.com/zhangzaikunzzk/Codex-Task-Notifier/tree/main/skills/task-complete-notifier
+```
+
+After Codex installs it, restart Codex so the new skill is loaded. Then you can ask:
+
+```text
+Use $task-complete-notifier to set up task completion notifications.
+```
+
+Codex will guide you through the local Pushover or Pushcut setup and can send a notification when a project task is complete.
+
 ## Why this exists
 
 Sometimes a local script, AI coding tool, backup job, build, or long-running task finishes while you are away from the computer. This project gives you one simple command you can run at the end of that task to receive a push notification.
@@ -209,6 +227,7 @@ Check that the notification arrives on your phone first. Then check:
 - `setup.ps1`: creates your private local `.env` configuration.
 - `.env.example`: shows the config format.
 - `.gitignore`: keeps local secrets and generated folders out of Git.
+- `skills/task-complete-notifier/`: optional Codex skill package.
 
 ## Security notes
 
