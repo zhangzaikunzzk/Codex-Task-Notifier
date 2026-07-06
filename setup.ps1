@@ -8,6 +8,17 @@ $ErrorActionPreference = "Stop"
 $scriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
 $envFile = Join-Path $scriptDir ".env"
 
+function ConvertFrom-SecureStringPlainText {
+  param([Security.SecureString]$SecureValue)
+
+  $bstr = [Runtime.InteropServices.Marshal]::SecureStringToBSTR($SecureValue)
+  try {
+    return [Runtime.InteropServices.Marshal]::PtrToStringBSTR($bstr)
+  } finally {
+    [Runtime.InteropServices.Marshal]::ZeroFreeBSTR($bstr)
+  }
+}
+
 if (Test-Path -LiteralPath $envFile) {
   $overwrite = Read-Host ".env already exists. Overwrite it? Type YES to continue"
   if ($overwrite -ne "YES") {
@@ -23,12 +34,8 @@ if ($Provider -eq "pushover") {
   $appTokenSecure = Read-Host "PUSHOVER_APP_TOKEN" -AsSecureString
   $userKeySecure = Read-Host "PUSHOVER_USER_KEY" -AsSecureString
 
-  $appToken = [Runtime.InteropServices.Marshal]::PtrToStringAuto(
-    [Runtime.InteropServices.Marshal]::SecureStringToBSTR($appTokenSecure)
-  )
-  $userKey = [Runtime.InteropServices.Marshal]::PtrToStringAuto(
-    [Runtime.InteropServices.Marshal]::SecureStringToBSTR($userKeySecure)
-  )
+  $appToken = ConvertFrom-SecureStringPlainText -SecureValue $appTokenSecure
+  $userKey = ConvertFrom-SecureStringPlainText -SecureValue $userKeySecure
 
   @(
     "# Local secrets. Do not commit this file."
@@ -43,9 +50,7 @@ if ($Provider -eq "pushover") {
 if ($Provider -eq "pushcut") {
   Write-Host "Pushcut setup"
   $webhookSecure = Read-Host "PUSHCUT_WEBHOOK_URL" -AsSecureString
-  $webhookUrl = [Runtime.InteropServices.Marshal]::PtrToStringAuto(
-    [Runtime.InteropServices.Marshal]::SecureStringToBSTR($webhookSecure)
-  )
+  $webhookUrl = ConvertFrom-SecureStringPlainText -SecureValue $webhookSecure
 
   @(
     "# Local secrets. Do not commit this file."
