@@ -1,0 +1,4 @@
+interface:
+  display_name: "Task Complete Notifier"
+  short_description: "Send task-complete phone or watch alerts"
+  default_prompt: "Use $task-complete-notifier to set up task completion notifications."
