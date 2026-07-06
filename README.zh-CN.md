@@ -1,53 +1,79 @@
-# 任务完成提醒
+<p align="center">
+  <h1 align="center">任务完成提醒</h1>
+  <p align="center">Codex、脚本、测试、构建跑完后，自动发一条提醒。</p>
+</p>
 
-这是一个很小的 PowerShell 脚本。作用很简单：任务跑完后，发一条提醒。
+<p align="center">
+  <a href="README.md">English</a>
+  ·
+  <a href="skills/task-complete-notifier">Codex Skill</a>
+  ·
+  <a href="#手动用法">手动用法</a>
+</p>
 
-可以发到：
+<p align="center">
+  <img alt="PowerShell" src="https://img.shields.io/badge/PowerShell-5%2B-4479A1">
+  <img alt="Codex Skill" src="https://img.shields.io/badge/Codex-Skill-111827">
+  <img alt="License" src="https://img.shields.io/badge/license-MIT-green">
+  <img alt="Secrets" src="https://img.shields.io/badge/secrets-local_only-orange">
+</p>
 
-- Pushover：适合手机和 Apple Watch，最推荐
-- Pushcut：适合已经在用 Pushcut webhook 的人
-- 通用 webhook：会发送 `{ "title": "...", "message": "..." }` 这种 JSON
-- 企业微信群机器人：也就是企微群机器人的 webhook
+---
 
-比如 Codex 改完代码、测试跑完、本地脚本执行结束、备份完成，你不用一直盯着电脑。收到通知再回来就行。
+## 这是干什么的
 
-## 微信和企微能不能用？
+一个很小的 PowerShell 脚本。任务跑完后，它给你发一条提醒。
 
-企微可以。企业微信群机器人本来就支持 webhook，这个项目已经加了 `wecom` provider。
+适合这些场景：Codex 改代码、测试跑很久、本地脚本执行、构建、备份。你不用一直盯着终端，收到通知再回来。
 
-普通个人微信不一样。个人微信群没有这种官方、稳定、简单的 webhook 入口。如果要接个人微信，通常要靠第三方中转或非官方机器人，风险和维护成本都高，所以这个项目默认不支持个人微信机器人。
+## 支持哪些通知方式
 
-## 用 Codex 安装，最省事
+| 方式 | 适合什么 | Provider |
+| --- | --- | --- |
+| Pushover | 手机和 Apple Watch | `pushover` |
+| Pushcut | iOS 自动化 webhook | `pushcut` |
+| 通用 webhook | 任意能接 JSON 的服务 | `webhook` |
+| 企业微信群机器人 | 企微群提醒 | `wecom` |
 
-如果你用 Codex，直接把下面这句话复制给它：
+通用 webhook 会发送：
+
+```json
+{ "title": "Task Notifier", "message": "Task completed" }
+```
+
+企微机器人会按 markdown 消息发到群里。
+
+## 最省事：让 Codex 安装 skill
+
+把这句话复制给 Codex：
 
 ```text
 Install the Codex skill from https://github.com/zhangzaikunzzk/Codex-Task-Notifier/tree/main/skills/task-complete-notifier
 ```
 
-安装完以后，重启 Codex。然后再说：
+安装完后，重启 Codex。然后说：
 
 ```text
 Use $task-complete-notifier to set up task completion notifications.
 ```
 
-接下来 Codex 会一步步带你配 Pushover、Pushcut、通用 webhook 或企微机器人。
+Codex 会带你选 Pushover、Pushcut、通用 webhook 或企微机器人。
 
 ## 会自动写 AGENTS.md 吗？
 
-不会。
+不会。安装 skill 只是安装 skill 文件，不会偷偷改你的全局配置，也不会改项目里的 `AGENTS.md`。
 
-安装 skill 只是把 skill 装进去，不会偷偷改你的全局配置，也不会改项目里的 `AGENTS.md`。
-
-如果你想让 Codex 以后在项目任务完成时自动发通知，再跟它说：
+如果你想让 Codex 以后在项目任务完成时自动提醒，再说：
 
 ```text
 Use $task-complete-notifier to configure notifications and add the task-completion notification rule to my AGENTS.md.
 ```
 
-这时候 Codex 应该先问你：写到全局 AGENTS，还是只写到当前项目。确认之后再动文件。
+Codex 应该先问你写到哪里：全局 AGENTS，还是当前项目 AGENTS。
 
 ## 手动用法
+
+下载这个仓库，在项目文件夹里打开 PowerShell，然后选一种 provider。
 
 ### Pushover
 
@@ -65,31 +91,42 @@ Use $task-complete-notifier to configure notifications and add the task-completi
 
 ### 企业微信群机器人
 
-先在企微群里添加群机器人，复制 webhook 地址。然后运行：
-
 ```powershell
 .\setup.ps1 -Provider wecom
 .\notify-task-complete.ps1 -Provider wecom -Title "Task Notifier" -Message "Task completed"
 ```
 
-### dry run
+### 先 dry run
 
-每种 provider 都可以先 dry run，不会真的发请求：
+每种方式都可以先 dry run，不会真的发请求：
 
 ```powershell
 .\notify-task-complete.ps1 -Provider wecom -Title "Task Notifier" -Message "Dry run OK" -DryRun
 ```
 
-## Apple Watch 怎么收到？
+## 微信和企微
+
+企微可以。企业微信群机器人本来就支持 webhook，这个项目已经加了 `wecom`。
+
+个人微信群不一样，没有官方、稳定、简单的 webhook 入口。要接个人微信通常得靠第三方中转或非官方机器人，维护成本和风险都高，所以这里不把它当默认支持项。
+
+## Apple Watch
 
 Apple Watch 是跟着 iPhone 的 Pushover 通知走的。手机能收到，手表没收到，就去 iPhone 的 Watch App 里检查 Pushover 的通知镜像。
 
-## 这些文件是干什么的
+## 项目结构
 
-- `notify-task-complete.ps1`：真正发送通知的脚本
-- `setup.ps1`：帮你生成本地 `.env` 配置
-- `.env.example`：配置模板，没有真实密钥
-- `skills/task-complete-notifier/`：给 Codex 安装用的 skill
+```text
+.
+├── notify-task-complete.ps1
+├── setup.ps1
+├── .env.example
+└── skills/
+    └── task-complete-notifier/
+        ├── SKILL.md
+        ├── agents/openai.yaml
+        └── scripts/
+```
 
 ## 安全提醒
 
