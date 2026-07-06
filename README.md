@@ -2,7 +2,14 @@
 
 [中文说明](README.zh-CN.md)
 
-A tiny Windows PowerShell utility for sending "task completed" notifications to your phone or Apple Watch through Pushover or Pushcut.
+A tiny Windows PowerShell utility for sending "task completed" notifications to your phone, Apple Watch, generic webhooks, or WeCom group robots.
+
+Supported providers:
+
+- `pushover`: recommended for phone and Apple Watch alerts
+- `pushcut`: for Pushcut webhook automations
+- `webhook`: generic JSON webhook with `{ "title": "...", "message": "..." }`
+- `wecom`: WeCom / 企业微信群机器人 webhook using markdown messages
 
 ## Easiest Setup: Install as a Codex Skill
 
@@ -18,7 +25,7 @@ After Codex installs it, restart Codex so the new skill is loaded. Then ask:
 Use $task-complete-notifier to set up task completion notifications.
 ```
 
-Codex will guide you through Pushover or Pushcut setup.
+Codex will guide you through Pushover, Pushcut, generic webhook, or WeCom setup.
 
 ## Does It Edit AGENTS.md Automatically?
 
@@ -34,31 +41,36 @@ Codex should ask whether to write the rule globally or only for the current proj
 
 ## Manual Setup Without Codex Skill
 
-1. Install Pushover on your phone.
-2. Create or log into your Pushover account at <https://pushover.net/>.
-3. Copy your account `User Key`.
-4. Create an application/API token under `Your Applications`.
-5. Download this repository as a ZIP and unzip it.
-6. Open PowerShell in the project folder.
-7. Run:
+Pushover:
 
 ```powershell
-.\setup.ps1
-```
-
-Paste your Pushover app token and user key when prompted.
-
-Test without sending:
-
-```powershell
-.\notify-task-complete.ps1 -Provider pushover -Title "Task Notifier" -Message "Dry run OK" -DryRun
-```
-
-Send a real test notification:
-
-```powershell
+.\setup.ps1 -Provider pushover
 .\notify-task-complete.ps1 -Provider pushover -Title "Task Notifier" -Message "Test notification"
 ```
+
+Generic webhook:
+
+```powershell
+.\setup.ps1 -Provider webhook
+.\notify-task-complete.ps1 -Provider webhook -Title "Task Notifier" -Message "Task completed"
+```
+
+WeCom group robot:
+
+```powershell
+.\setup.ps1 -Provider wecom
+.\notify-task-complete.ps1 -Provider wecom -Title "Task Notifier" -Message "Task completed"
+```
+
+Dry run works for every provider and does not send a real request:
+
+```powershell
+.\notify-task-complete.ps1 -Provider wecom -Title "Task Notifier" -Message "Dry run OK" -DryRun
+```
+
+## WeChat and WeCom Notes
+
+WeCom group robots support incoming webhook URLs and are a good fit for this project. Regular personal WeChat groups do not provide the same official simple webhook flow, so this project does not treat personal WeChat bots as a default provider.
 
 ## Apple Watch Notes
 
@@ -73,6 +85,6 @@ Apple Watch receives the notification by mirroring Pushover notifications from y
 
 ## Security
 
-- Do not paste Pushover or Pushcut secrets into chat.
+- Do not paste webhook URLs, Pushover keys, or Pushcut URLs into chat.
 - `.env` stays on your machine and is ignored by Git.
-- The scripts do not print your token or user key.
+- The scripts do not print your secrets.
