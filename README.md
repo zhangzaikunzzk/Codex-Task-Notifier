@@ -1,17 +1,49 @@
-# Task Complete Notifier
+<p align="center">
+  <h1 align="center">Task Complete Notifier</h1>
+  <p align="center">Send a completion alert when Codex, a script, a build, or any long-running task finishes.</p>
+</p>
 
-[中文说明](README.zh-CN.md)
+<p align="center">
+  <a href="README.zh-CN.md">中文说明</a>
+  ·
+  <a href="skills/task-complete-notifier">Codex Skill</a>
+  ·
+  <a href="#manual-setup">Manual setup</a>
+</p>
 
-A tiny Windows PowerShell utility for sending "task completed" notifications to your phone, Apple Watch, generic webhooks, or WeCom group robots.
+<p align="center">
+  <img alt="PowerShell" src="https://img.shields.io/badge/PowerShell-5%2B-4479A1">
+  <img alt="Codex Skill" src="https://img.shields.io/badge/Codex-Skill-111827">
+  <img alt="License" src="https://img.shields.io/badge/license-MIT-green">
+  <img alt="Secrets" src="https://img.shields.io/badge/secrets-local_only-orange">
+</p>
 
-Supported providers:
+---
 
-- `pushover`: recommended for phone and Apple Watch alerts
-- `pushcut`: for Pushcut webhook automations
-- `webhook`: generic JSON webhook with `{ "title": "...", "message": "..." }`
-- `wecom`: WeCom / 企业微信群机器人 webhook using markdown messages
+## What it does
 
-## Easiest Setup: Install as a Codex Skill
+Task Complete Notifier is a small Windows PowerShell utility for sending task-completion alerts to your phone, Apple Watch, team chat, or any webhook endpoint.
+
+It is designed for cases where you do not want to keep watching the terminal: Codex work, test suites, builds, backups, local scripts, and other slow jobs.
+
+## Supported providers
+
+| Provider | Best for | Command value |
+| --- | --- | --- |
+| Pushover | Phone and Apple Watch alerts | `pushover` |
+| Pushcut | iOS automation webhooks | `pushcut` |
+| Generic webhook | Any JSON endpoint | `webhook` |
+| WeCom group robot | 企业微信群机器人 | `wecom` |
+
+The generic webhook sends:
+
+```json
+{ "title": "Task Notifier", "message": "Task completed" }
+```
+
+The WeCom provider sends a markdown message to a WeCom group robot webhook.
+
+## Fastest path: install as a Codex skill
 
 Copy this into Codex:
 
@@ -19,17 +51,17 @@ Copy this into Codex:
 Install the Codex skill from https://github.com/zhangzaikunzzk/Codex-Task-Notifier/tree/main/skills/task-complete-notifier
 ```
 
-After Codex installs it, restart Codex so the new skill is loaded. Then ask:
+Restart Codex after installation, then ask:
 
 ```text
 Use $task-complete-notifier to set up task completion notifications.
 ```
 
-Codex will guide you through Pushover, Pushcut, generic webhook, or WeCom setup.
+Codex will walk through the local setup for Pushover, Pushcut, generic webhook, or WeCom.
 
-## Does It Edit AGENTS.md Automatically?
+## Does it edit AGENTS.md automatically?
 
-No. Installing the skill only installs the skill files. It does not automatically edit global or project `AGENTS.md`.
+No. Installing the skill only installs the skill files.
 
 If you want Codex to remember the notification rule for future tasks, ask:
 
@@ -39,28 +71,32 @@ Use $task-complete-notifier to configure notifications and add the task-completi
 
 Codex should ask whether to write the rule globally or only for the current project before editing any AGENTS file.
 
-## Manual Setup Without Codex Skill
+## Manual setup
 
-Pushover:
+Download this repository, open PowerShell in the project folder, then choose a provider.
+
+### Pushover
 
 ```powershell
 .\setup.ps1 -Provider pushover
 .\notify-task-complete.ps1 -Provider pushover -Title "Task Notifier" -Message "Test notification"
 ```
 
-Generic webhook:
+### Generic webhook
 
 ```powershell
 .\setup.ps1 -Provider webhook
 .\notify-task-complete.ps1 -Provider webhook -Title "Task Notifier" -Message "Task completed"
 ```
 
-WeCom group robot:
+### WeCom group robot
 
 ```powershell
 .\setup.ps1 -Provider wecom
 .\notify-task-complete.ps1 -Provider wecom -Title "Task Notifier" -Message "Task completed"
 ```
+
+### Dry run
 
 Dry run works for every provider and does not send a real request:
 
@@ -68,20 +104,29 @@ Dry run works for every provider and does not send a real request:
 .\notify-task-complete.ps1 -Provider wecom -Title "Task Notifier" -Message "Dry run OK" -DryRun
 ```
 
-## WeChat and WeCom Notes
+## WeChat and WeCom
 
-WeCom group robots support incoming webhook URLs and are a good fit for this project. Regular personal WeChat groups do not provide the same official simple webhook flow, so this project does not treat personal WeChat bots as a default provider.
+WeCom group robots support incoming webhook URLs and fit this project well.
 
-## Apple Watch Notes
+Regular personal WeChat groups do not provide the same official simple webhook flow, so this project does not treat personal WeChat bots as a default provider.
 
-Apple Watch receives the notification by mirroring Pushover notifications from your iPhone. If the phone receives the alert but the watch does not, check the iPhone Watch app notification settings for Pushover.
+## Apple Watch
 
-## Files
+Apple Watch receives the alert by mirroring Pushover notifications from your iPhone. If the phone receives the alert but the watch does not, check Pushover notification mirroring in the iPhone Watch app.
 
-- `notify-task-complete.ps1`: sends the notification.
-- `setup.ps1`: creates your local `.env` configuration.
-- `.env.example`: shows the config format.
-- `skills/task-complete-notifier/`: installable Codex skill package.
+## Project structure
+
+```text
+.
+├── notify-task-complete.ps1
+├── setup.ps1
+├── .env.example
+└── skills/
+    └── task-complete-notifier/
+        ├── SKILL.md
+        ├── agents/openai.yaml
+        └── scripts/
+```
 
 ## Security
 
